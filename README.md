@@ -12,14 +12,6 @@
   - https://marketplace.visualstudio.com/items?itemName=ms-vscode-remote.remote-containers
 - 本リポジトリの clone
 - `.env` ファイルを空ファイルでプロジェクト直下に作成
-- 以下をプロジェクト名に合わせて変更
-  - `.devcontainer/devcontainer.json`
-    - `name`, `service`
-  - `docker-compose.yml`
-    - `services` のKey名
-    - `image`, `container_name`
-  - `README.md`
-  - `LICENSE`
 
 ### 開発手順
 
