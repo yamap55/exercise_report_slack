@@ -1,4 +1,4 @@
-# python_repository_simple
+# exercise_report_slack
 
 ## 環境詳細
 
