@@ -13,6 +13,12 @@
 - 本リポジトリの clone
 - `.env` ファイルを空ファイルでプロジェクト直下に作成
 
+### 環境変数設定
+
+```
+SLACK_BOT_TOKEN=xoxb-xxxxxxxxxxxx-xxxxxxxxxxxxx-xxxxxxxxxxxxxxxxxxxxxxxx
+```
+
 ### 開発手順
 
 1. VSCode 起動
@@ -21,3 +27,18 @@
 4. しばらく待つ
    - 初回の場合コンテナ image の取得や作成が行われる
 5. 起動したら開発可能
+
+## SlackAPI1 で必要な権限
+
+```
+channels:history
+channels:read
+chat:write
+chat:write.public
+groups:history
+groups:read
+im:read
+mpim:history
+mpim:read
+users:read
+```
