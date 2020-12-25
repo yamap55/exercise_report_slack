@@ -1,3 +1,5 @@
+ipykernel==5.4.2
+
 # lint
 flake8==3.8.4
 black==20.8b1
