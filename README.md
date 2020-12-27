@@ -28,6 +28,12 @@ SLACK_BOT_TOKEN=xoxb-xxxxxxxxxxxx-xxxxxxxxxxxxx-xxxxxxxxxxxxxxxxxxxxxxxx
    - 初回の場合コンテナ image の取得や作成が行われる
 5. 起動したら開発可能
 
+## 実行
+
+```
+python -m exercise_report_slack.main
+```
+
 ## SlackAPI1 で必要な権限
 
 ```
