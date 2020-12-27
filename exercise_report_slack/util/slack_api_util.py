@@ -106,3 +106,27 @@ def get_channel_message(channel_id: str, oldest: float) -> List[Dict[str, Any]]:
         messages = response["messages"]
         messages_all = messages_all + messages
     return messages_all
+
+
+def get_replies(channel_id: str, message: Dict[str, Any]) -> List[Dict[str, Any]]:
+    """
+    指定されたメッセージのリプライを返す
+
+    Parameters
+    ----------
+    channel_id : str
+        チャンネルID
+    message : Dict[str, Any]
+        リプライを取得する対象のメッセージ
+
+    Returns
+    -------
+    List[Dict[str, Any]]
+        リプライメッセージ
+        リプライがついていない場合は空のリスト
+    """
+    if "thread_ts" not in message:
+        return []
+    return client.conversations_replies(channel=channel_id, ts=message["thread_ts"]).data[
+        "messages"
+    ]
