@@ -7,7 +7,7 @@ from exercise_report_slack.settings import client
 
 def get_channel_id(name: str) -> str:
     """
-    指定されたチャンネルのチャンネルIDを返す
+    指定されたチャンネルのチャンネルIDを取得する
 
     Parameters
     ----------
@@ -31,7 +31,7 @@ def get_channel_id(name: str) -> str:
 
 def get_user_name(user_id: str) -> str:
     """
-    指定されたユーザIDのユーザ名を返す
+    指定されたユーザIDのユーザ名を取得する
 
     Parameters
     ----------
@@ -81,7 +81,7 @@ def post_message(
 
 def get_channel_message(channel_id: str, oldest: float) -> List[Dict[str, Any]]:
     """
-    指定されたチャンネルのメッセージを返す
+    指定されたチャンネルのメッセージを取得する
 
     Parameters
     ----------
@@ -92,8 +92,8 @@ def get_channel_message(channel_id: str, oldest: float) -> List[Dict[str, Any]]:
 
     Returns
     -------
-    str
-        ユーザ名
+    List[Dict[str, Any]]
+        指定されたチャンネルのメッセージ
     """
     option = {"channel": channel_id, "oldest": oldest}
     response = client.conversations_history(**option).data
