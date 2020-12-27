@@ -18,3 +18,21 @@ def get_last_monday() -> datetime:
     return now - relativedelta.relativedelta(
         weeks=1, days=now.weekday(), hour=0, minute=0, second=0
     )
+
+
+def convert_timestamp_to_mmdda(ts: str) -> str:
+    """
+    文字列のタイムスタンプを「MM/DD（a）」形式に変換する
+
+    Parameters
+    ----------
+    ts : str
+        タイムスタンプ
+
+    Returns
+    -------
+    str
+        「MM/DD（a）」形式の日付
+        例: 12/23（水）
+    """
+    return datetime.fromtimestamp(float(ts)).strftime("%m/%d（%a）")
