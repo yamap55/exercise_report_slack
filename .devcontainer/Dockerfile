@@ -1,6 +1,5 @@
 ARG PYTHON_VERSION=3.8.6
 FROM python:${PYTHON_VERSION}
-
 ENV DEBIAN_FRONTEND=noninteractive
 ENV TZ=Asia/Tokyo
 RUN echo $TZ > /etc/timezone
@@ -16,10 +15,14 @@ RUN chsh -s /bin/bash
 RUN rm -rf /var/lib/apt/lists/* \
     && apt-get update \
     && apt-get upgrade -y \
-    && apt-get -y install sudo vim tzdata less \
+    && apt-get -y install sudo vim tzdata less locales \
     && apt-get autoremove -y \
     && apt-get clean -y \
     && rm -rf /var/lib/apt/lists/*
+
+RUN sed -i -E 's/# (ja_JP.UTF-8)/\1/' /etc/locale.gen \
+    && locale-gen \
+    && update-locale LANG=ja_JP.UTF-8
 
 # Or your actual UID, GID on Linux if not the default 1000
 ARG USERNAME=vscode
