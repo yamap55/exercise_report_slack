@@ -1,5 +1,4 @@
 ipykernel==5.4.2
-python-dateutil==2.8.1
 
 # lint
 flake8==3.8.4
