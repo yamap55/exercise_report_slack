@@ -5,16 +5,20 @@ from datetime import datetime
 from dateutil import relativedelta
 
 
-def get_last_monday() -> datetime:
+def get_last_monday(now=datetime.now()) -> datetime:
     """
-    先週の月曜日を返す
+    指定日付の1週間前の月曜日を取得
+
+    Parameters
+    ----------
+    now : datetime, optional
+        指定日付, by default datetime.now()
 
     Returns
     -------
     datetime
-        先週の月曜日
+        1週間前の月曜日
     """
-    now = datetime.now()
     return now - relativedelta.relativedelta(
         weeks=1, days=now.weekday(), hour=0, minute=0, second=0
     )
