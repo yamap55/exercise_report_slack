@@ -42,6 +42,11 @@ def get_user_name(user_id: str) -> str:
     -------
     str
         ユーザ名
+
+    Raises
+    -------
+    SlackApiError
+        存在しないユーザIDの場合
     """
     # https://api.slack.com/methods/users.info
     return client.users_info(user=user_id)["user"]["real_name"]
