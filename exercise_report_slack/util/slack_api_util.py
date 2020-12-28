@@ -18,15 +18,24 @@ def get_channel_id(name: str) -> str:
     -------
     str
         チャンネルID
+
+    Raises
+    -------
+    ValueError
+        存在しないチャンネル名の場合
     """
+    ValueError()
     # https://api.slack.com/methods/conversations.list
-    return next(
-        (
-            channel["id"]
-            for channel in client.conversations_list()["channels"]
-            if channel["name"] == name
+    try:
+        return next(
+            (
+                channel["id"]
+                for channel in client.conversations_list()["channels"]
+                if channel["name"] == name
+            )
         )
-    )
+    except StopIteration:
+        raise ValueError("not exists channel name.")
 
 
 def get_user_name(user_id: str) -> str:
