@@ -73,7 +73,7 @@ def post_message(
         チャンネルID
     text : str
         ポストする内容
-    thread_ts : [type], optional
+    thread_ts : str, optional
         リプライとしたい場合に指定するタイムスタンプ, by default None
     menthon_users : List[str], optional
         メンションを指定するユーザ
