@@ -5,6 +5,7 @@ import pytest
 from exercise_report_slack.util.slack_api_util import (
     get_channel_id,
     get_channel_message,
+    get_replies,
     get_user_name,
     post_message,
 )
@@ -182,5 +183,105 @@ class TestGetChannelMessage:
             [
                 mock.call(channel="CHANNEL_ID", oldest=float(1.23)),
                 mock.call(channel="CHANNEL_ID", oldest=float(1.23), cursor="abcdefg"),
+            ]
+        )
+
+
+class TestGetReplies:
+    class ReturnValue:
+        data = {}
+
+    @pytest.fixture(autouse=True)
+    def setUp(self):
+        with mock.patch(
+            "exercise_report_slack.util.slack_api_util.client.conversations_replies",
+        ) as mock_method:
+            self.mock_method = mock_method
+            yield
+
+    def test_not_exists_thread_ts_in_message(self):
+        actual = get_replies("CHANNEL_ID", {})
+        expected = []
+
+        assert actual == expected
+        self.mock_method.assert_not_called()
+
+    def create_return_object(self, data: Dict[str, Any]):
+        return_value = self.ReturnValue()
+        return_value.data = data
+        return return_value
+
+    def test_exists_thread_ts_in_message_and_not_has_more(self):
+        arg_message = {
+            "thread_ts": "1234567890.000001",
+            "ts": "1234567890.000001",
+            "text": "TEXT_MESSAGE_1",
+            "user": "USER_1",
+        }
+        messages = [
+            {
+                "ts": "1234567890.000010",
+                "text": "TEXT_MESSAGE_10",
+                "user": "USER_10",
+            }
+        ]
+        self.mock_method.return_value = self.create_return_object(
+            {
+                "has_more": False,
+                "messages": messages,
+            }
+        )
+        actual = get_replies("CHANNEL_ID", arg_message)
+        expected = messages
+
+        assert actual == expected
+        self.mock_method.assert_called_once_with(channel="CHANNEL_ID", ts="1234567890.000001")
+
+    def test_exists_thread_ts_in_message_and_has_more(self):
+        arg_message = {
+            "thread_ts": "1234567890.000001",
+            "ts": "1234567890.000001",
+            "text": "TEXT_MESSAGE_1",
+            "user": "USER_1",
+        }
+
+        messages_1 = [
+            {
+                "ts": "1234567890.000010",
+                "text": "TEXT_MESSAGE_10",
+                "user": "USER_1",
+            }
+        ]
+        messages_2 = [
+            {
+                "ts": "1234567890.000020",
+                "text": "TEXT_MESSAGE_20",
+                "user": "USER_2",
+            }
+        ]
+        self.mock_method.side_effect = [
+            self.create_return_object(
+                {
+                    "has_more": True,
+                    "messages": messages_1,
+                    "response_metadata": {"next_cursor": "abcdefg"},
+                }
+            ),
+            self.create_return_object(
+                {
+                    "has_more": False,
+                    "messages": messages_2,
+                }
+            ),
+        ]
+
+        actual = get_replies("CHANNEL_ID", arg_message)
+        expected = messages_1 + messages_2
+
+        assert actual == expected
+        self.mock_method.assert_has_calls(
+            [
+                mock.call(channel="CHANNEL_ID", ts="1234567890.000001"),
+                mock.call(channel="CHANNEL_ID", ts="1234567890.000001", cursor="abcdefg"),
             ]
         )
