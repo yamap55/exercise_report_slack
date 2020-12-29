@@ -1,9 +1,9 @@
-name: pytest
+name: lint
 
 on: [push]
 
 jobs:
-  pytest:
+  lint:
     runs-on: ubuntu-latest
     env:
       SLACK_BOT_TOKEN: DUMMY_TOKEN
