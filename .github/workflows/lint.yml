@@ -19,11 +19,11 @@ jobs:
           pip install -r requirements.txt -r requirements-dev.txt
       - name: Lint with flake8
         run: flake8
-      - name: Use Node.js 14.4
+      - name: Use Node.js 14.x
         uses: actions/setup-node@v1
         with:
-          node-version: 14.4
-      - run: npm install pyright
+          node-version: 14.x
+      - run: npm install --global pyright
       - name: Lint with pyright
         run: |
           npm install pyright
