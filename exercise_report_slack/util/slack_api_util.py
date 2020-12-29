@@ -1,6 +1,6 @@
 """Slack APIを操作する関数群"""
 from time import sleep
-from typing import Any, Dict, List
+from typing import Any, Dict, List, Optional
 
 from exercise_report_slack.settings import client
 
@@ -62,7 +62,7 @@ def get_user_name(user_id: str) -> str:
 
 
 def post_message(
-    channel_id: str, text: str, thread_ts=None, menthon_users: List[str] = []
+    channel_id: str, text: str, thread_ts: Optional[str] = None, mention_users: List[str] = []
 ) -> Dict[str, Any]:
     """
     指定されたチャンネルにメッセージをポストする
@@ -73,10 +73,10 @@ def post_message(
         チャンネルID
     text : str
         ポストする内容
-    thread_ts : str, optional
+    thread_ts : Optional[str], optional
         リプライとしたい場合に指定するタイムスタンプ, by default None
-    menthon_users : List[str], optional
-        メンションを指定するユーザ
+    mention_users : List[str], optional
+        メンションを指定するユーザID
         テキストの先頭に空白区切りで付与します
         2人以上が指定されている場合はメンション後に改行を追加します, by default []
 
@@ -85,9 +85,9 @@ def post_message(
     Dict[str, Any]
         ポストしたメッセージのデータ
     """
-    menthons = [f"<@{u}>" for u in menthon_users]
-    menthons_postfix = "\n" if len(menthons) > 1 else " "
-    send_message = " ".join(menthons) + menthons_postfix + text
+    mentions = [f"<@{u}>" for u in mention_users]
+    mentions_postfix = "\n" if len(mentions) > 1 else ""
+    send_message = " ".join(mentions) + mentions_postfix + text
 
     res = client.chat_postMessage(channel=channel_id, text=send_message, thread_ts=thread_ts)
     return res.data
