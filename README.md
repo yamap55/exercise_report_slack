@@ -1,5 +1,7 @@
 # exercise_report_slack
 
+[![pytest](https://github.com/yamap55/exercise_report_slack/workflows/pytest/badge.svg?branch=master)](https://github.com/yamap55/exercise_report_slack/actions?query=workflow%3Apytest)
+
 ## 環境詳細
 
 - Python : 3.8.6
