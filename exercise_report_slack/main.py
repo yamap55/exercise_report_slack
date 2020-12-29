@@ -18,7 +18,8 @@ from exercise_report_slack.util.slack_api_util import (
 client = settings.client
 
 
-def main():
+def main() -> None:
+    """main"""
     try:
         channel_id = get_channel_id(settings.TARGET_CHANNEL)
         oldest = get_last_monday().timestamp()
