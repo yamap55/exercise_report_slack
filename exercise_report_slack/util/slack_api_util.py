@@ -24,7 +24,6 @@ def get_channel_id(name: str) -> str:
     ValueError
         存在しないチャンネル名の場合
     """
-    ValueError()
     # https://api.slack.com/methods/conversations.list
     try:
         return next(
