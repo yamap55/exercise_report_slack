@@ -27,7 +27,7 @@ def get_last_monday(now=None) -> datetime:
 
 def convert_timestamp_to_mmdda(ts: str) -> str:
     """
-    文字列のタイムスタンプを「MM/DD（a）」形式に変換する
+    文字列のタイムスタンプを「MM/DD（a）」形式に変換
 
     Parameters
     ----------

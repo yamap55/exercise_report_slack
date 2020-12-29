@@ -7,7 +7,7 @@ from exercise_report_slack.settings import client
 
 def get_channel_id(name: str) -> str:
     """
-    指定されたチャンネルのチャンネルIDを取得する
+    指定されたチャンネルのチャンネルIDを取得
 
     Parameters
     ----------
@@ -39,7 +39,7 @@ def get_channel_id(name: str) -> str:
 
 def get_user_name(user_id: str) -> str:
     """
-    指定されたユーザIDのユーザ名を取得する
+    指定されたユーザIDのユーザ名を取得
 
     Parameters
     ----------
@@ -64,7 +64,7 @@ def post_message(
     channel_id: str, text: str, thread_ts: Optional[str] = None, mention_users: List[str] = []
 ) -> Dict[str, Any]:
     """
-    指定されたチャンネルにメッセージをポストする
+    指定されたチャンネルにメッセージをポスト
 
     Parameters
     ----------
@@ -95,7 +95,7 @@ def post_message(
 
 def get_channel_message(channel_id: str, oldest: float) -> List[Dict[str, Any]]:
     """
-    指定されたチャンネルのメッセージを取得する
+    指定されたチャンネルのメッセージを取得
 
     Parameters
     ----------
@@ -125,7 +125,7 @@ def get_channel_message(channel_id: str, oldest: float) -> List[Dict[str, Any]]:
 
 def get_replies(channel_id: str, message: Dict[str, Any]) -> List[Dict[str, Any]]:
     """
-    指定されたメッセージのリプライを返す
+    指定されたメッセージのリプライを取得
 
     Parameters
     ----------
