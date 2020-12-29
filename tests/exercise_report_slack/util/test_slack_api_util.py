@@ -1,7 +1,13 @@
+from typing import Any, Dict
 from unittest import mock
 
 import pytest
-from exercise_report_slack.util.slack_api_util import get_channel_id, get_user_name, post_message
+from exercise_report_slack.util.slack_api_util import (
+    get_channel_id,
+    get_channel_message,
+    get_user_name,
+    post_message,
+)
 from slack_sdk.errors import SlackApiError
 
 
@@ -97,4 +103,84 @@ class TestPostMessage:
         assert actual == expected
         self.mock_method.assert_called_once_with(
             channel="CHANNEL_ID", text="POST_MESSAGE", thread_ts=None
+        )
+
+
+class TestGetChannelMessage:
+    class ReturnValue:
+        data = {}
+
+    @pytest.fixture(autouse=True)
+    def setUp(self):
+        with mock.patch(
+            "exercise_report_slack.util.slack_api_util.client.conversations_history",
+        ) as mock_method:
+            self.mock_method = mock_method
+            yield
+
+    def create_return_object(self, data: Dict[str, Any]):
+        return_value = self.ReturnValue()
+        return_value.data = data
+        return return_value
+
+    def test_not_has_more(self):
+        messages = [
+            {
+                "ts": "1234567890.000001",
+                "text": "TEXT_MESSAGE_1",
+                "user": "USER_1",
+            }
+        ]
+        self.mock_method.return_value = self.create_return_object(
+            {
+                "has_more": False,
+                "messages": messages,
+            }
+        )
+        actual = get_channel_message("CHANNEL_ID", float(1.23))
+        expected = messages
+
+        assert actual == expected
+        self.mock_method.assert_called_once_with(channel="CHANNEL_ID", oldest=float(1.23))
+
+    def test_has_more(self):
+        messages_1 = [
+            {
+                "ts": "1234567890.000001",
+                "text": "TEXT_MESSAGE_1",
+                "user": "USER_1",
+            }
+        ]
+        messages_2 = [
+            {
+                "ts": "1234567890.000002",
+                "text": "TEXT_MESSAGE_2",
+                "user": "USER_2",
+            }
+        ]
+        self.mock_method.side_effect = [
+            self.create_return_object(
+                {
+                    "has_more": True,
+                    "messages": messages_1,
+                    "response_metadata": {"next_cursor": "abcdefg"},
+                }
+            ),
+            self.create_return_object(
+                {
+                    "has_more": False,
+                    "messages": messages_2,
+                }
+            ),
+        ]
+
+        actual = get_channel_message("CHANNEL_ID", float(1.23))
+        expected = messages_1 + messages_2
+
+        assert actual == expected
+        self.mock_method.assert_has_calls(
+            [
+                mock.call(channel="CHANNEL_ID", oldest=float(1.23)),
+                mock.call(channel="CHANNEL_ID", oldest=float(1.23), cursor="abcdefg"),
+            ]
         )

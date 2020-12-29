@@ -109,6 +109,7 @@ def get_channel_message(channel_id: str, oldest: float) -> List[Dict[str, Any]]:
     List[Dict[str, Any]]
         指定されたチャンネルのメッセージ
     """
+    # https://api.slack.com/methods/conversations.history
     option = {"channel": channel_id, "oldest": oldest}
     response = client.conversations_history(**option).data
     messages_all = response["messages"]
@@ -116,7 +117,7 @@ def get_channel_message(channel_id: str, oldest: float) -> List[Dict[str, Any]]:
         sleep(1)  # need to wait 1 sec before next call due to rate limits
         response = client.conversations_history(
             **option, cursor=response["response_metadata"]["next_cursor"]
-        )
+        ).data
         messages = response["messages"]
         messages_all = messages_all + messages
     return messages_all
