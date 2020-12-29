@@ -5,9 +5,12 @@ on: [push]
 jobs:
   pytest:
     runs-on: ubuntu-latest
+    env:
+      SLACK_BOT_TOKEN: DUMMY_TOKEN
     strategy:
       matrix:
         python-version: [3.7, 3.8, 3.9]
+
     steps:
       - name: locale setup
         run: |
