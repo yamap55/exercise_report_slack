@@ -85,6 +85,7 @@ def post_message(
     Dict[str, Any]
         ポストしたメッセージのデータ
     """
+    # https://api.slack.com/methods/chat.postMessage
     mentions = [f"<@{u}>" for u in mention_users]
     mentions_postfix = "\n" if len(mentions) > 1 else ""
     send_message = " ".join(mentions) + mentions_postfix + text
@@ -140,6 +141,7 @@ def get_replies(channel_id: str, message: Dict[str, Any]) -> List[Dict[str, Any]
         リプライメッセージ
         リプライがついていない場合は空のリスト
     """
+    # https://api.slack.com/methods/conversations.replies
     if "thread_ts" not in message:
         return []
     return client.conversations_replies(channel=channel_id, ts=message["thread_ts"]).data[
