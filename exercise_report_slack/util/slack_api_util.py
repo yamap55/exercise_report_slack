@@ -1,8 +1,9 @@
 """Slack APIを操作する関数群"""
 from time import sleep
-from typing import Any, Dict, List, Optional
+from typing import Any, Callable, Dict, List, Optional
 
 from exercise_report_slack.settings import client
+from slack_sdk.web.slack_response import SlackResponse
 
 
 def get_channel_id(name: str) -> str:
@@ -93,6 +94,20 @@ def post_message(
     return res.data
 
 
+def __get_all_message_by_iterating(
+    func: Callable[..., SlackResponse], option: Dict[str, Any]
+) -> List[Dict[str, Any]]:
+    """繰り返し処理ですべてのメッセージを取得"""
+    response = func(**option).data
+    messages_all = response["messages"]
+    while response["has_more"]:
+        sleep(1)  # need to wait 1 sec before next call due to rate limits
+        response = func(**option, cursor=response["response_metadata"]["next_cursor"]).data
+        messages = response["messages"]
+        messages_all = messages_all + messages
+    return messages_all
+
+
 def get_channel_message(channel_id: str, oldest: float) -> List[Dict[str, Any]]:
     """
     指定されたチャンネルのメッセージを取得
@@ -111,16 +126,7 @@ def get_channel_message(channel_id: str, oldest: float) -> List[Dict[str, Any]]:
     """
     # https://api.slack.com/methods/conversations.history
     option = {"channel": channel_id, "oldest": oldest}
-    response = client.conversations_history(**option).data
-    messages_all = response["messages"]
-    while response["has_more"]:
-        sleep(1)  # need to wait 1 sec before next call due to rate limits
-        response = client.conversations_history(
-            **option, cursor=response["response_metadata"]["next_cursor"]
-        ).data
-        messages = response["messages"]
-        messages_all = messages_all + messages
-    return messages_all
+    return __get_all_message_by_iterating(client.conversations_history, option)
 
 
 def get_replies(channel_id: str, message: Dict[str, Any]) -> List[Dict[str, Any]]:
@@ -143,6 +149,5 @@ def get_replies(channel_id: str, message: Dict[str, Any]) -> List[Dict[str, Any]
     # https://api.slack.com/methods/conversations.replies
     if "thread_ts" not in message:
         return []
-    return client.conversations_replies(channel=channel_id, ts=message["thread_ts"]).data[
-        "messages"
-    ]
+    option = {"channel": channel_id, "ts": message["thread_ts"]}
+    return __get_all_message_by_iterating(client.conversations_replies, option)
