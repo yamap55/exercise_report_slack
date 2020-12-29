@@ -1,6 +1,7 @@
 # exercise_report_slack
 
 [![pytest](https://github.com/yamap55/exercise_report_slack/workflows/pytest/badge.svg?branch=master)](https://github.com/yamap55/exercise_report_slack/actions?query=workflow%3Apytest)
+[![lint](https://github.com/yamap55/exercise_report_slack/workflows/lint/badge.svg)](https://github.com/yamap55/exercise_report_slack/actions?query=workflow%3Alint)
 
 ## 環境詳細
 
