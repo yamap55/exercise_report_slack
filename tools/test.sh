@@ -1,2 +1,2 @@
 #!/bin/bash
-pytest --verbose --cov
+pytest --verbose --cov --showlocals --durations=5
