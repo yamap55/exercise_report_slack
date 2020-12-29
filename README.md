@@ -42,7 +42,7 @@ python -m exercise_report_slack.main
 pytest
 ```
 
-## SlackAPI1 で必要な権限
+## SlackAPI で必要な権限
 
 ```
 channels:history
