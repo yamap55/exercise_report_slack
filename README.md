@@ -34,6 +34,12 @@ SLACK_BOT_TOKEN=xoxb-xxxxxxxxxxxx-xxxxxxxxxxxxx-xxxxxxxxxxxxxxxxxxxxxxxx
 python -m exercise_report_slack.main
 ```
 
+## ユニットテスト実行
+
+```
+pytest
+```
+
 ## SlackAPI1 で必要な権限
 
 ```
