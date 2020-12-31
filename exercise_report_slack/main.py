@@ -18,6 +18,14 @@ from exercise_report_slack.util.slack_api_util import (
 client = settings.client
 
 
+def __first_message_filtering_conditions(message: Dict[str, Any]) -> bool:
+    return (
+        (message["user"] == settings.TARGET_SLACK_BOT_NAME)  # 既定の発言者である事
+        & (message["text"] == settings.TARGET_SLACK_MESSAGE)  # 既定のメッセージである事
+        # & ('thread_ts' in message) # スレッドが続いている事
+    )
+
+
 def main() -> None:
     """main"""
     try:
@@ -25,15 +33,9 @@ def main() -> None:
         oldest = get_last_monday().timestamp()
         messages = get_channel_message(channel_id, oldest)
 
-        def f(message: Dict[str, Any]):
-            return (
-                (message["user"] == settings.TARGET_SLACK_BOT_NAME)  # 既定の発言者である事
-                & (message["text"] == settings.TARGET_SLACK_MESSAGE)  # 既定のメッセージである事
-                # & ('thread_ts' in message) # スレッドが続いている事
-            )
-
-        target_first_messages = [message for message in messages if f(message)]
-        target_first_message = target_first_messages[0]
+        target_first_messages = [
+            message for message in messages if __first_message_filtering_conditions(message)
+        ]
         output_dict = {}
         for target_first_message in target_first_messages:
             target_messages = get_replies(channel_id, target_first_message)
