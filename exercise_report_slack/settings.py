@@ -10,6 +10,8 @@ TARGET_CHANNEL = "test"
 TARGET_SLACK_BOT_NAME = "USLACKBOT"
 # 集計の対象とする発言（この発言のスレッド内容を集計とする）
 TARGET_SLACK_MESSAGE = "Reminder: hoge."
+# 集計の報告をはじめるメッセージ
+POST_FIRST_MESSAGE = "先週の運動結果報告"
 
 
 locale.setlocale(locale.LC_TIME, "ja_JP.UTF-8")
