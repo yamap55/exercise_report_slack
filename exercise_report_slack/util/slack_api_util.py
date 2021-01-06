@@ -108,7 +108,7 @@ def __get_all_message_by_iterating(
     return messages_all
 
 
-def get_channel_message(channel_id: str, oldest: float) -> List[Dict[str, Any]]:
+def get_channel_message(channel_id: str, oldest: float, latest: float) -> List[Dict[str, Any]]:
     """
     指定されたチャンネルのメッセージを取得
 
@@ -118,6 +118,8 @@ def get_channel_message(channel_id: str, oldest: float) -> List[Dict[str, Any]]:
         チャンネルID
     oldest : float
         取得を行う最初の時間
+    latest : float
+        取得を行う最後の時間
 
     Returns
     -------
@@ -125,7 +127,7 @@ def get_channel_message(channel_id: str, oldest: float) -> List[Dict[str, Any]]:
         指定されたチャンネルのメッセージ
     """
     # https://api.slack.com/methods/conversations.history
-    option = {"channel": channel_id, "oldest": oldest}
+    option = {"channel": channel_id, "oldest": oldest, "latest": latest}
     return __get_all_message_by_iterating(client.conversations_history, option)
 
 

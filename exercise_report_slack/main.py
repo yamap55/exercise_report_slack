@@ -6,7 +6,7 @@ from typing import Any, Dict, List, Tuple
 from slack_sdk.errors import SlackApiError
 
 import exercise_report_slack.settings as settings
-from exercise_report_slack.util.date_util import convert_timestamp_to_mmdda, get_last_monday
+from exercise_report_slack.util.date_util import convert_timestamp_to_mmdda, get_last_week_range
 from exercise_report_slack.util.slack_api_util import (
     get_channel_id,
     get_channel_message,
@@ -30,8 +30,10 @@ def main() -> None:
     """main"""
     try:
         channel_id = get_channel_id(settings.TARGET_CHANNEL)
-        oldest = get_last_monday().timestamp()
-        messages = get_channel_message(channel_id, oldest)
+        monday, sunday = get_last_week_range()
+        oldest = monday.timestamp()
+        latest = sunday.timestamp()
+        messages = get_channel_message(channel_id, oldest, latest)
 
         target_first_messages = [
             message for message in messages if __first_message_filtering_conditions(message)

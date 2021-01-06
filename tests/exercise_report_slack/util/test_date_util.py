@@ -2,16 +2,19 @@ import locale
 from datetime import datetime
 
 import pytest
-from exercise_report_slack.util.date_util import convert_timestamp_to_mmdda, get_last_monday
+from exercise_report_slack.util.date_util import convert_timestamp_to_mmdda, get_last_week_range
 
 
-class TestGetLastMonday:
+class TestGetLastWeekRange:
     def test_nomal_case(self):
         d = datetime.strptime("2020/01/23 4:5:6", "%Y/%m/%d %H:%M:%S")
         assert d.weekday() == 3  # 2020/01/23 は木曜
 
-        actual = get_last_monday(d)
-        expected = datetime.strptime("2020/01/13", "%Y/%m/%d")
+        actual = get_last_week_range(d)
+        expected = (
+            datetime.strptime("2020/01/13 0:0:0.0", "%Y/%m/%d %H:%M:%S.%f"),
+            datetime.strptime("2020/01/19 23:59:59.999999", "%Y/%m/%d %H:%M:%S.%f"),
+        )
 
         assert actual == expected
 
