@@ -18,12 +18,31 @@ from exercise_report_slack.util.slack_api_util import (
 client = settings.client
 
 
-def __first_message_filtering_conditions(message: Dict[str, Any]) -> bool:
-    return (
-        (message["user"] == settings.TARGET_SLACK_BOT_NAME)  # 既定の発言者である事
-        & (message["text"] == settings.TARGET_SLACK_MESSAGE)  # 既定のメッセージである事
-        # & ('thread_ts' in message) # スレッドが続いている事
-    )
+def __get_target_messages(
+    messages: List[Dict[str, Any]], user: str, target_message: str
+) -> List[Dict[str, Any]]:
+    """
+    対象のメッセージ群から指定のユーザが指定の発言をしているメッセージを取得
+
+    Parameters
+    ----------
+    messages : List[Dict[str, Any]]
+        探索対象とするメッセージ群
+    user : str
+        ユーザID
+    target_message : str
+        探索対象とするメッセージ（完全一致）
+
+    Returns
+    -------
+    List[Dict[str, Any]]
+        メッセージ群
+    """
+    return [
+        message
+        for message in messages
+        if (message["user"] == user) & (message["text"] == target_message)
+    ]
 
 
 def main() -> None:
@@ -35,27 +54,32 @@ def main() -> None:
         latest = sunday.timestamp()
         messages = get_channel_message(channel_id, oldest, latest)
 
-        target_first_messages = [
-            message for message in messages if __first_message_filtering_conditions(message)
-        ]
-        message_by_date = __get_message_by_date(channel_id, target_first_messages)
+        # 目標設定取得
+        target_goal_messages = __get_target_messages(
+            messages, settings.TARGET_SLACK_BOT_NAME, settings.TARGET_SLACK_MESSAGE_GOAL
+        )
+        goal_messages = __get_post_messages(
+            channel_id, target_goal_messages, settings.GOAL_MESSAGE_POST_PREFIX
+        )
+
+        # 運動実績取得
+        target_first_messages = __get_target_messages(
+            messages, settings.TARGET_SLACK_BOT_NAME, settings.TARGET_SLACK_MESSAGE
+        )
+        experience_messages = __get_post_messages(channel_id, target_first_messages)
+
+        print("goal_messages:", goal_messages)
+        print("experience_messages:", experience_messages)
 
         # まとめメッセージをポスト
         res = post_message(channel_id, settings.POST_FIRST_MESSAGE)
         ts = res["ts"]
-        nl = "\n"
-
-        # 日付毎にメッセージをまとめ、元メッセージに対してリプライを行う
-        # NOTE: 後でリファクタリング
-        for date_str, user_messages in message_by_date:
-            messsages = [
-                f"{get_user_name(user_id)}{nl}{nl.join(messages)}"
-                for user_id, messages in user_messages.items()
-            ]
-            message = date_str + "\n" + "\n\n".join(messsages)
+        # まとめメッセージに対してリプライ
+        for message in goal_messages + experience_messages:
             post_message(channel_id, message, thread_ts=ts)
 
     except SlackApiError as e:
+        # TODO: エラーハンドリングはデフォルトのままなのでもう少し考慮が必要
         # You will get a SlackApiError if "ok" is False
         assert e.response["ok"] is False
         assert e.response["error"]  # str like 'invalid_auth', 'channel_not_found'
@@ -64,7 +88,7 @@ def main() -> None:
         print(e)
 
 
-def __f(channel_id, target_first_message) -> Tuple[str, Dict[str, List[str]]]:
+def __f(channel_id: str, target_first_message: Dict[str, Any]) -> Tuple[str, Dict[str, List[str]]]:
     target_messages = get_replies(channel_id, target_first_message)
     if not target_messages:
         # リプライがついていない場合
@@ -104,6 +128,42 @@ def __get_message_by_date(
     # 最新日付が上位にきているため、日付を基準にしてソート
     result = sorted(output_dict.items(), key=lambda x: x[0])
     return result
+
+
+def __get_post_messages(
+    channel_id: str, target_first_messages: List[Dict[str, Any]], prefix: str = None
+) -> List[str]:
+    """
+    POSTを行うメッセージ群を取得
+
+    Parameters
+    ----------
+    channel_id : str
+        チャンネルID
+    target_first_messages : List[Dict[str, Any]]
+        集計対象のメッセージ一覧
+    prefix : str, optional
+        POSTメッセージのprefix, by default 日付（MM/DD）
+
+    Returns
+    -------
+    List[str]
+        ポストするメッセージ群
+    """
+    message_by_date = __get_message_by_date(channel_id, target_first_messages)
+    nl = "\n"
+
+    def f(prefix, user_messages):
+        messsages = [
+            f"{get_user_name(user_id)}{nl}{nl.join(messages)}"
+            for user_id, messages in user_messages.items()
+        ]
+        return prefix + "\n" + "\n\n".join(messsages)
+
+    return [
+        f(prefix if prefix else date_str, user_messages)
+        for date_str, user_messages in message_by_date
+    ]
 
 
 if __name__ == "__main__":
