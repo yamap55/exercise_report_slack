@@ -20,6 +20,7 @@
 
 ```
 SLACK_BOT_TOKEN=xoxb-xxxxxxxxxxxx-xxxxxxxxxxxxx-xxxxxxxxxxxxxxxxxxxxxxxx
+TARGET_CHANNEL=target_channel
 ```
 
 ### 開発手順
