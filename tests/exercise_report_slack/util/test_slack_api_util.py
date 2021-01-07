@@ -12,6 +12,16 @@ from exercise_report_slack.util.slack_api_util import (
 from slack_sdk.errors import SlackApiError
 
 
+class ReturnValue:
+    data = {}
+
+
+def create_return_object(data: Dict[str, Any]):
+    return_value = ReturnValue()
+    return_value.data = data
+    return return_value
+
+
 class TestGetUserName:
     @pytest.fixture(autouse=True)
     def setUp(self):
@@ -42,6 +52,9 @@ class TestGetUserName:
 class TestGetChannelId:
     @pytest.fixture(autouse=True)
     def setUp(self):
+
+        self.return_value: Dict[str, Any] = {"response_metadata": {"next_cursor": ""}}
+
         with mock.patch(
             "exercise_report_slack.util.slack_api_util.client.conversations_list",
         ) as mock_method:
@@ -49,12 +62,14 @@ class TestGetChannelId:
             yield
 
     def test_nomal_case(self):
-        self.mock_method.return_value = {
-            "channels": [
-                {"name": "CHANNEL_NAME1", "id": "CHANNEL_ID1"},
-                {"name": "CHANNEL_NAME2", "id": "CHANNEL_ID2"},
-            ]
-        }
+        self.mock_method.return_value = create_return_object(
+            {
+                "channels": [
+                    {"name": "CHANNEL_NAME1", "id": "CHANNEL_ID1"},
+                    {"name": "CHANNEL_NAME2", "id": "CHANNEL_ID2"},
+                ]
+            }
+        )
         actual = get_channel_id("CHANNEL_NAME1")
         expected = "CHANNEL_ID1"
 
@@ -62,10 +77,40 @@ class TestGetChannelId:
         self.mock_method.assert_called_once_with()
 
     def test_not_exists_channel_name(self):
-        self.mock_method.return_value = {"channels": []}
-
+        self.mock_method.return_value = create_return_object(
+            {
+                "channels": [],
+                "response_metadata": {"next_cursor": ""},
+            }
+        )
         with pytest.raises(ValueError):
             get_channel_id("CHANNEL_NAME")
+
+    def test_next_cursor_true(self):
+        self.mock_method.side_effect = [
+            create_return_object(
+                {
+                    "channels": [],
+                    "response_metadata": {"next_cursor": "NEXT_CURSOR"},
+                }
+            ),
+            create_return_object(
+                {
+                    "channels": [{"name": "CHANNEL_NAME1", "id": "CHANNEL_ID1"}],
+                    "response_metadata": {"next_cursor": ""},
+                }
+            ),
+        ]
+        actual = get_channel_id("CHANNEL_NAME1")
+        expected = "CHANNEL_ID1"
+
+        assert actual == expected
+        self.mock_method.assert_has_calls(
+            [
+                mock.call(),
+                mock.call(cursor="NEXT_CURSOR"),
+            ]
+        )
 
 
 class TestPostMessage:
@@ -108,9 +153,6 @@ class TestPostMessage:
 
 
 class TestGetChannelMessage:
-    class ReturnValue:
-        data = {}
-
     @pytest.fixture(autouse=True)
     def setUp(self):
         with mock.patch(
@@ -118,11 +160,6 @@ class TestGetChannelMessage:
         ) as mock_method:
             self.mock_method = mock_method
             yield
-
-    def create_return_object(self, data: Dict[str, Any]):
-        return_value = self.ReturnValue()
-        return_value.data = data
-        return return_value
 
     def test_not_has_more(self):
         messages = [
@@ -132,7 +169,7 @@ class TestGetChannelMessage:
                 "user": "USER_1",
             }
         ]
-        self.mock_method.return_value = self.create_return_object(
+        self.mock_method.return_value = create_return_object(
             {
                 "has_more": False,
                 "messages": messages,
@@ -162,14 +199,14 @@ class TestGetChannelMessage:
             }
         ]
         self.mock_method.side_effect = [
-            self.create_return_object(
+            create_return_object(
                 {
                     "has_more": True,
                     "messages": messages_1,
                     "response_metadata": {"next_cursor": "abcdefg"},
                 }
             ),
-            self.create_return_object(
+            create_return_object(
                 {
                     "has_more": False,
                     "messages": messages_2,
@@ -192,9 +229,6 @@ class TestGetChannelMessage:
 
 
 class TestGetReplies:
-    class ReturnValue:
-        data = {}
-
     @pytest.fixture(autouse=True)
     def setUp(self):
         with mock.patch(
@@ -210,11 +244,6 @@ class TestGetReplies:
         assert actual == expected
         self.mock_method.assert_not_called()
 
-    def create_return_object(self, data: Dict[str, Any]):
-        return_value = self.ReturnValue()
-        return_value.data = data
-        return return_value
-
     def test_exists_thread_ts_in_message_and_not_has_more(self):
         arg_message = {
             "thread_ts": "1234567890.000001",
@@ -229,7 +258,7 @@ class TestGetReplies:
                 "user": "USER_10",
             }
         ]
-        self.mock_method.return_value = self.create_return_object(
+        self.mock_method.return_value = create_return_object(
             {
                 "has_more": False,
                 "messages": messages,
@@ -264,14 +293,14 @@ class TestGetReplies:
             }
         ]
         self.mock_method.side_effect = [
-            self.create_return_object(
+            create_return_object(
                 {
                     "has_more": True,
                     "messages": messages_1,
                     "response_metadata": {"next_cursor": "abcdefg"},
                 }
             ),
-            self.create_return_object(
+            create_return_object(
                 {
                     "has_more": False,
                     "messages": messages_2,

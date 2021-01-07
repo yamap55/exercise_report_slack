@@ -27,13 +27,21 @@ def get_channel_id(name: str) -> str:
     """
     # https://api.slack.com/methods/conversations.list
     try:
-        return next(
-            (
-                channel["id"]
-                for channel in client.conversations_list()["channels"]
-                if channel["name"] == name
-            )
-        )
+        option = {}
+        next_cursor = "DUMMY"  # whileを1度は回すためダミー値を設定
+        while next_cursor:
+            response = client.conversations_list(**option).data
+            target_channnels = [
+                channel["id"] for channel in response["channels"] if channel["name"] == name
+            ]
+            if target_channnels:
+                return target_channnels[0]
+            # チャンネルが多い場合は1度で全てを取得できない
+            # 尚、メッセージ取得系と異なり「has_more」属性は持っていない
+            next_cursor = response["response_metadata"]["next_cursor"]
+            option["cursor"] = next_cursor
+            sleep(1)  # need to wait 1 sec before next call due to rate limits
+        raise ValueError("not exists channel name.")
     except StopIteration:
         raise ValueError("not exists channel name.")
 
