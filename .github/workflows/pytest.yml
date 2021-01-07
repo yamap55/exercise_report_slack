@@ -7,6 +7,7 @@ jobs:
     runs-on: ubuntu-latest
     env:
       SLACK_BOT_TOKEN: DUMMY_TOKEN
+      TARGET_CHANNEL: DUMMY_TARGET_CHANNEL
     strategy:
       matrix:
         python-version: [3.7, 3.8, 3.9]
