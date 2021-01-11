@@ -6,7 +6,11 @@ from typing import Any, Dict, List, Tuple
 from slack_sdk.errors import SlackApiError
 
 import exercise_report_slack.settings as settings
-from exercise_report_slack.util.date_util import convert_timestamp_to_mmdda, get_last_week_range
+from exercise_report_slack.util.date_util import (
+    JST,
+    convert_timestamp_to_mmdda,
+    get_last_week_range,
+)
 from exercise_report_slack.util.slack_api_util import (
     get_channel_id,
     get_channel_message,
@@ -95,7 +99,9 @@ def __f(channel_id: str, target_first_message: Dict[str, Any]) -> Tuple[str, Dic
         date_str = convert_timestamp_to_mmdda(target_first_message["ts"])
         return date_str, {}
     first_message = target_messages.pop(0)
-    date_str = datetime.fromtimestamp(float(first_message["thread_ts"])).strftime("%m/%d（%a）")
+    date_str = datetime.fromtimestamp(float(first_message["thread_ts"]), tz=JST).strftime(
+        "%m/%d（%a）"
+    )
     d = defaultdict(list)
     for message in target_messages:
         d[message["user"]].append(message["text"])
