@@ -2,8 +2,8 @@ name: execute
 
 on:
   schedule:
-    # JST 14:00
-    - cron: "0 5 * * 1"
+    # JST 13:00
+    - cron: "0 4 * * 1"
 
 jobs:
   execute:
