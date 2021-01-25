@@ -27,7 +27,10 @@ def get_last_week_range(now=None) -> Tuple[datetime, datetime]:
     # 今週の月曜日までの日数+1 を引いている = 先週の日曜日
     last_sunday_date = now - timedelta(days=now.weekday() + 1)
     last_monday = datetime(
-        year=last_monday_date.year, month=last_monday_date.month, day=last_monday_date.day
+        year=last_monday_date.year,
+        month=last_monday_date.month,
+        day=last_monday_date.day,
+        tzinfo=now.tzinfo,
     )
     last_sunday = datetime(
         year=last_sunday_date.year,
@@ -37,6 +40,7 @@ def get_last_week_range(now=None) -> Tuple[datetime, datetime]:
         minute=59,
         second=59,
         microsecond=999999,
+        tzinfo=now.tzinfo,
     )
     return last_monday, last_sunday
 

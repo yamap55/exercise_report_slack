@@ -72,8 +72,9 @@ def main() -> None:
         )
         experience_messages = __get_post_messages(channel_id, target_first_messages)
 
-        print("goal_messages:", goal_messages)
-        print("experience_messages:", experience_messages)
+        # debug用
+        # print("goal_messages:", goal_messages)
+        # print("experience_messages:", experience_messages)
 
         # まとめメッセージをポスト
         res = post_message(channel_id, settings.POST_FIRST_MESSAGE)
