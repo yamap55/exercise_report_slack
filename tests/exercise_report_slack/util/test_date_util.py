@@ -7,13 +7,25 @@ from exercise_report_slack.util.date_util import convert_timestamp_to_mmdda, get
 
 class TestGetLastWeekRange:
     def test_nomal_case(self):
-        d = datetime.strptime("2020/01/23 4:5:6", "%Y/%m/%d %H:%M:%S")
+        d = datetime.strptime("2020/01/23 4:5:6+0900", "%Y/%m/%d %H:%M:%S%z")
         assert d.weekday() == 3  # 2020/01/23 は木曜
 
         actual = get_last_week_range(d)
         expected = (
-            datetime.strptime("2020/01/13 0:0:0.0", "%Y/%m/%d %H:%M:%S.%f"),
-            datetime.strptime("2020/01/19 23:59:59.999999", "%Y/%m/%d %H:%M:%S.%f"),
+            datetime.strptime("2020/01/13 0:0:0.0+0900", "%Y/%m/%d %H:%M:%S.%f%z"),
+            datetime.strptime("2020/01/19 23:59:59.999999+0900", "%Y/%m/%d %H:%M:%S.%f%z"),
+        )
+
+        assert actual == expected
+
+    def test_not_jst_timezone(self):
+        d = datetime.strptime("2020/01/23 4:5:6+0000", "%Y/%m/%d %H:%M:%S%z")
+        assert d.weekday() == 3  # 2020/01/23 は木曜
+
+        actual = get_last_week_range(d)
+        expected = (
+            datetime.strptime("2020/01/13 0:0:0.0+0000", "%Y/%m/%d %H:%M:%S.%f%z"),
+            datetime.strptime("2020/01/19 23:59:59.999999+0000", "%Y/%m/%d %H:%M:%S.%f%z"),
         )
 
         assert actual == expected
