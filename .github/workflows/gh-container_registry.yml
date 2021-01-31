@@ -14,7 +14,7 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
           docker login ghcr.io -u ${GITHUB_ACTOR} -p ${GITHUB_TOKEN}
-          docker tag original ghcr.io/yamap55/exercise_report_slack/exercise_report_slack:${GITHUB_SHA::8}
-          docker push ghcr.io/yamap55/exercise_report_slack/exercise_report_slack:${GITHUB_SHA::8}
-          docker tag original ghcr.io/yamap55/exercise_report_slack/exercise_report_slack:latest
-          docker push ghcr.io/yamap55/exercise_report_slack/exercise_report_slack:latest
+          docker tag original ghcr.io/yamap55/exercise_report_slack:${GITHUB_SHA::8}
+          docker push ghcr.io/yamap55/exercise_report_slack:${GITHUB_SHA::8}
+          docker tag original ghcr.io/yamap55/exercise_report_slack:latest
+          docker push ghcr.io/yamap55/exercise_report_slack:latest
