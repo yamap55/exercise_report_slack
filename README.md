@@ -32,13 +32,13 @@ TARGET_CHANNEL=target_channel
    - 初回の場合コンテナ image の取得や作成が行われる
 5. 起動したら開発可能
 
-## 実行
+### 実行
 
 ```
 python -m exercise_report_slack.main
 ```
 
-## ユニットテスト実行
+### ユニットテスト実行
 
 ```
 pytest
@@ -57,4 +57,16 @@ im:read
 mpim:history
 mpim:read
 users:read
+```
+
+## コンテナイメージの作成
+
+```
+docker build -t test -f prod.dockerfile .
+```
+
+## コンテナイメージからの実行
+
+```
+docker run --rm -e SLACK_BOT_TOKEN=xoxb-xxxxxxxxxxxx-xxxxxxxxxxxxx-xxxxxxxxxxxxxxxxxxxxxxxx -e TARGET_CHANNEL=target_channel test:latest
 ```
