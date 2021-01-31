@@ -1,0 +1,23 @@
+name: Build Dockerfile and Push GitHub Container Registry
+on:
+  push:
+    branches:
+      - master
+jobs:
+  build-and-push:
+    runs-on: ubuntu-latest
+    timeout-minutes: 300
+    steps:
+      - uses: actions/checkout@v2
+      - name: Build Image
+        run: |
+          docker build -f prod.dockerfile -t original .
+      - name: Push to GitHub Container Registry
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          docker login ghcr.io -u ${GITHUB_ACTOR} -p ${GITHUB_TOKEN}
+          docker tag original ghcr.io/exercise_report_slack:${GITHUB_SHA::8}
+          docker push ghcr.io/exercise_report_slack:${GITHUB_SHA::8}
+          docker tag original ghcr.io/exercise_report_slack:latest
+          docker push ghcr.io/exercise_report_slack:latest
