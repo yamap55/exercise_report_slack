@@ -1,8 +1,5 @@
 name: Build Dockerfile and Push GitHub Container Registry
-on:
-  push:
-    branches:
-      - master
+on: push
 jobs:
   build-and-push:
     runs-on: ubuntu-latest
