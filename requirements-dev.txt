@@ -2,7 +2,7 @@ ipykernel==6.9.2
 
 # lint
 flake8==4.0.1
-black==22.1.0
+black==22.3.0
 flake8-docstrings==1.6.0
 flake8-quotes==3.3.1
 
