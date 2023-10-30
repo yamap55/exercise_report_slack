@@ -1,4 +1,4 @@
-ipykernel==6.25.2
+ipykernel==6.26.0
 
 # lint
 flake8==6.1.0
