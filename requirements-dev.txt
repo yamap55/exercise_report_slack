@@ -7,5 +7,5 @@ flake8-docstrings==1.7.0
 flake8-quotes==3.4.0
 
 # test
-pytest==8.3.2
+pytest==8.3.3
 pytest-cov==5.0.0
