@@ -8,4 +8,4 @@ flake8-quotes==3.4.0
 
 # test
 pytest==8.4.1
-pytest-cov==6.2.1
+pytest-cov==6.3.0
